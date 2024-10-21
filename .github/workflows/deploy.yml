@@ -22,7 +22,7 @@ jobs:
             key: ${{ secrets.SSH_PRIVATE_KEY }}
             envs: ACME_EMAIL=${{ secrets.ACME_EMAIL }}
             script: |
-                mkdir -p /home/debian/traefik
-                rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" ./docker-compose.yml debian@${{ secrets.HOST }}:/home/debian/traefik/
-                ssh -i ~/.ssh/id_rsa -p ${{ secrets.SSH_PORT }} debian@${{ secrets.HOST }} "cd /home/debian/traefik && docker-compose up -d"
+                sudo mkdir -p /home/debian/traefik
+                rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" ./docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }}:/home/debian/traefik/
+                ssh -i ~/.ssh/id_rsa -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} "cd /home/debian/traefik && docker-compose up -d"
     
