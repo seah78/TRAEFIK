@@ -23,6 +23,8 @@ jobs:  # Section contenant les différents jobs du workflow
           envs: ACME_EMAIL=${{ secrets.ACME_EMAIL }}  # Injecte la variable d'environnement `ACME_EMAIL` provenant des secrets GitHub
           script: |  # Les commandes à exécuter sur le VPS via SSH
             sudo docker volume create letsencrypt || true  # Crée un volume Docker nommé "letsencrypt" pour stocker les certificats SSL ; ignore l'erreur si le volume existe déjà
+            sudo docker stop seah-traefik || true
+            sudo docker rm seah-traefik || true
             sudo docker run -d \  # Lance le conteneur Traefik en mode détaché (en arrière-plan)
               -p 80:80 -p 443:443 \  # Mappe le port 80 (HTTP) et le port 443 (HTTPS) du VPS aux ports 80 et 443 du conteneur Traefik
               --restart unless-stopped \  # Configure le conteneur pour redémarrer automatiquement sauf s'il est explicitement arrêté
