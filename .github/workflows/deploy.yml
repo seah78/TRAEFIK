@@ -13,30 +13,31 @@ jobs:
       - name: Checkout code  
         uses: actions/checkout@v3  
 
-      - name: Deploy Traefik via SSH on VPS  
-        uses: appleboy/ssh-action@v0.1.8  
-        with:  
-          host: ${{ secrets.HOST }}  
-          port: ${{ secrets.SSH_PORT }}  
-          username: ${{ secrets.SSH_USERNAME }}  
-          key: ${{ secrets.SSH_PRIVATE_KEY }}  
-          envs: ACME_EMAIL=${{ secrets.ACME_EMAIL }}  
-          script: |  
-            sudo docker volume create letsencrypt || true  
+      - name: Deploy Traefik via SSH on VPS
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: ACME_EMAIL=${{ secrets.ACME_EMAIL }}
+          script: |
+            sudo docker volume create letsencrypt || true
             sudo docker stop seah-traefik || true
             sudo docker rm seah-traefik || true
-            sudo docker run -d \  
-              -p 80:80 -p 443:443 \  
-              --restart unless-stopped \  
-              --name seah-traefik \  
-              --env ACME_EMAIL=${{ secrets.ACME_EMAIL }} \  
-              --volume /var/run/docker.sock:/var/run/docker.sock:ro \  
-              --volume letsencrypt:/letsencrypt \  
-              traefik:v2.9 \  
-              --api.insecure=true \ 
-              --providers.docker=true \  
-              --entrypoints.web.address=:80 \  
-              --entrypoints.websecure.address=:443 \  
-              --certificatesresolvers.myresolver.acme.tlschallenge=true \   
-              --certificatesresolvers.myresolver.acme.email=${ACME_EMAIL} \ 
-              --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json  
+            sudo docker run -d \
+              -p 80:80 -p 443:443 \
+              --restart unless-stopped \
+              --name seah-traefik \
+              --env ACME_EMAIL=${{ secrets.ACME_EMAIL }} \
+              --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+              --volume letsencrypt:/letsencrypt \
+              traefik:v2.9 \
+              --api.insecure=true \
+              --providers.docker=true \
+              --entrypoints.web.address=:80 \
+              --entrypoints.websecure.address=:443 \
+              --certificatesresolvers.myresolver.acme.tlschallenge=true \
+              --certificatesresolvers.myresolver.acme.email=${ACME_EMAIL} \
+              --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      
